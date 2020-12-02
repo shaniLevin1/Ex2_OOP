@@ -1,10 +1,11 @@
-package api;
+package tests;
 
+import api.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DS_DWGraphTest {
+class DS_DWGraphTestTal {
 
     @Test
     void copy() {
