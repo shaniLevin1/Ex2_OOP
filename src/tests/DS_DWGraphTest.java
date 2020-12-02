@@ -12,6 +12,7 @@ class DS_DWGraphTest {
     @Test
     void getNode() {
         directed_weighted_graph g0 =new DS_DWGraph();
+        g0.getNode(1);
     }
 
     @Test
