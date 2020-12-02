@@ -19,6 +19,7 @@ public class NodeData implements node_data{
         this.weight=0;
         this.Info=" ";
     }
+
     public NodeData(node_data a){
         this.id=a.getKey();
         this.Tag=a.getTag();
