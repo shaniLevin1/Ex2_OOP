@@ -4,7 +4,6 @@ import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
     private directed_weighted_graph gr;
-
     public void DWGraph_Algo() {
         this.gr = new DS_DWGraph();
     }
@@ -103,9 +102,66 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0.4;
+        if (gr.nodeSize()==0 || gr == null || (gr.nodeSize() == 1 && src != dest) || gr.getNode(src) == null || gr.getNode(dest) == null)
+            return -1;
+        if (src == dest)
+            return 0;
+        int countSrcDest = cSRCd(gr.getNode(dest));
+        int count = 0;
+        Iterator<node_data> x=gr.getV().iterator();
+        while(x.hasNext()){
+            x.next().setTag(0);
+        }
+        HashMap<Integer, Double> dist = new HashMap<>();//hashmap for the distances (int for key)
+        PriorityQueue<node_data> queue = new PriorityQueue<>(new Comparator<node_data>() {
+            @Override
+            public int compare(node_data o1, node_data o2) {
+                return -Double.compare(dist.get(o2.getKey()), dist.get(o1.getKey()));
+            }//defining the comparator- returns the shortest distance from src node
+        });
+        dist.put(src, 0.0);
+        queue.add(gr.getNode(src));
+        while (!queue.isEmpty()) {
+            node_data keep = queue.poll();
+            for (edge_data i : gr.getE(keep.getKey())) {
+                if (gr.getNode(i.getDest()).getTag() != 2) {
+                    if (gr.getNode(i.getDest()).getKey() == dest)
+                        count++;
+                    if (dist.containsKey(i.getDest())) {
+                        if (dist.get(i.getDest()) > dist.get(i.getSrc()) + gr.getEdge(i.getSrc(), i.getDest()).getWeight()) {
+                            dist.put(i.getDest(), dist.get(i.getSrc()) + gr.getEdge(i.getSrc(), i.getDest()).getWeight());
+                            queue.remove(i.getDest());//remove the old value (bigger than current)
+                        }
+                    } else
+                        dist.put(i.getDest(), dist.get(i.getSrc()) + gr.getEdge(i.getSrc(), i.getDest()).getWeight());
+
+                    if (queue.contains(gr.getNode(i.getDest()))) {
+                        queue.remove(gr.getNode(i.getDest()));
+                    }
+
+                    gr.getNode(i.getDest()).setTag(1);
+                    queue.add(gr.getNode(i.getDest()));
+                }
+            }
+
+            if (count == countSrcDest)
+                break;
+            gr.getNode(keep.getKey()).setTag(2);//i finished with that node completely
+        }
+
+        return dist.get(dest);
     }
 
+    public int cSRCd(node_data dest){
+        int count=0;
+        for(node_data i : gr.getV()){
+           for(edge_data j: gr.getE(i.getKey())) {
+               if (j.getDest() == dest.getKey())
+                   count++;
+           }
+        }
+        return count;
+    }
     /**
      * returns the the shortest path between src to dest - as an ordered List of nodes:
      * src--> n1-->n2-->...dest
@@ -118,7 +174,65 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public List<node_data> shortestPath(int src, int dest) {
-        return null;
+        if (gr.nodeSize()==0 || gr == null || (gr.nodeSize() == 1 && src != dest) || gr.getNode(src) == null || gr.getNode(dest) == null)
+            return null;
+        HashMap<Integer, List<node_data>> shortest = new HashMap<Integer, List<node_data>>();
+        List<node_data> l = new LinkedList<>();
+        l.add(gr.getNode(src));
+        if (src == dest)
+            return l;
+        shortest.put(src, l);
+        int countSrcDest = cSRCd(gr.getNode(dest));
+        int count = 0;
+        Iterator<node_data> x=gr.getV().iterator();
+        while(x.hasNext()){
+            x.next().setTag(0);
+        }
+        HashMap<Integer, Double> dist = new HashMap<>();//hashmap for the distances (int for key)
+        PriorityQueue<node_data> queue = new PriorityQueue<>(new Comparator<node_data>() {
+            @Override
+            public int compare(node_data o1, node_data o2) {
+                return -Double.compare(dist.get(o2.getKey()), dist.get(o1.getKey()));
+            }//defining the comparator- returns the shortest distance from src node
+        });
+        dist.put(src, 0.0);
+        queue.add(gr.getNode(src));
+        while (!queue.isEmpty()) {
+            node_data keep = queue.poll();
+            for (edge_data i : gr.getE(keep.getKey())) {
+                if (gr.getNode(i.getDest()).getTag() != 2) {
+                    if (gr.getNode(i.getDest()).getKey() == dest)
+                        count++;
+                    if (dist.containsKey(i.getDest())) {
+                        if (dist.get(i.getDest()) > dist.get(i.getSrc()) + gr.getEdge(i.getSrc(), i.getDest()).getWeight()) {
+                            dist.put(i.getDest(), dist.get(i.getSrc()) + gr.getEdge(i.getSrc(), i.getDest()).getWeight());
+                            queue.remove(i.getDest());//remove the old value (bigger than current)
+                        }
+                    } else
+                        dist.put(i.getDest(), dist.get(i.getSrc()) + gr.getEdge(i.getSrc(), i.getDest()).getWeight());
+                    List<node_data> s = new LinkedList<node_data>();
+                    Iterator<node_data> it = shortest.get((keep.getKey())).iterator();
+                    while (it.hasNext()) {
+                        s.add(it.next());
+                    }
+                    //deep copy for the list
+                    s.add(gr.getNode(i.getDest()));
+                    if (queue.contains(gr.getNode(i.getDest()))) {
+                        queue.remove(gr.getNode(i.getDest()));
+                    }
+                   // queue.add(gr.getNode(i.getDest()));
+                    shortest.put(gr.getNode(i.getDest()).getKey(), s);
+                }
+                gr.getNode(i.getDest()).setTag(1);
+                queue.add(gr.getNode(i.getDest()));
+            }
+
+            if (count == countSrcDest)
+                break;
+            gr.getNode(keep.getKey()).setTag(2);//i finished with that node completely
+        }
+
+        return shortest.get(dest);
     }
 
     /**

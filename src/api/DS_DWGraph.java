@@ -11,8 +11,8 @@ import java.util.Objects;
 // GENERATE EQUALS.
 public class DS_DWGraph implements directed_weighted_graph {
     private HashMap<Integer, node_data> Vmap;
-    private HashMap<Integer,HashMap<Integer,edge_data>> SEmap;
-    private HashMap<Integer,HashMap<Integer,edge_data>> DEmap;
+    private HashMap<Integer, HashMap<Integer, edge_data>> SEmap;
+    private HashMap<Integer, HashMap<Integer, edge_data>> DEmap;
     private int Ecounter;
     private int MCcounter;
 
@@ -27,6 +27,13 @@ public class DS_DWGraph implements directed_weighted_graph {
                 Objects.equals(DEmap, that.DEmap);
     }
 
+    public HashMap<Integer, HashMap<Integer, edge_data>> getDEmap() {
+        //returns all the src's from dest
+        if (this.SEmap != null)
+            return this.DEmap;
+        return  null;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(Vmap, SEmap, DEmap, Ecounter, MCcounter);
@@ -34,31 +41,31 @@ public class DS_DWGraph implements directed_weighted_graph {
 
     public DS_DWGraph() {
         Vmap = new HashMap<Integer, node_data>();
-        SEmap=new HashMap<Integer,HashMap<Integer,edge_data>>();
-        DEmap=new HashMap<Integer,HashMap<Integer,edge_data>>();
-        Ecounter=0;
-        MCcounter=0;
+        SEmap = new HashMap<Integer, HashMap<Integer, edge_data>>();
+        DEmap = new HashMap<Integer, HashMap<Integer, edge_data>>();
+        Ecounter = 0;
+        MCcounter = 0;
     }
 
     // need to fix
     // Tal's complexity was: max(nk,nk')
     public DS_DWGraph(directed_weighted_graph d) {
         this.Ecounter = d.edgeSize();
-        Vmap=new HashMap<Integer, node_data>();
-        SEmap=new HashMap<Integer, HashMap<Integer, edge_data>>();
-        DEmap=new HashMap<Integer, HashMap<Integer, edge_data>>();
+        Vmap = new HashMap<Integer, node_data>();
+        SEmap = new HashMap<Integer, HashMap<Integer, edge_data>>();
+        DEmap = new HashMap<Integer, HashMap<Integer, edge_data>>();
         for (node_data n : d.getV()) {
             node_data x = new NodeData(n);
             Vmap.put(n.getKey(), x);
             HashMap<Integer, edge_data> Emap1 = new HashMap<Integer, edge_data>();
             HashMap<Integer, edge_data> Emap2 = new HashMap<Integer, edge_data>();
-            SEmap.put(n.getKey(),Emap1);
-            DEmap.put(n.getKey(),Emap2);
-             for(edge_data x1:d.getE(n.getKey())){
-                 edge_data x2=new EdgeData(x1);
-                 Emap1.put(x2.getDest(),x1);
-                 Emap2.put(x2.getSrc(),x1);
-             }
+            SEmap.put(n.getKey(), Emap1);
+            DEmap.put(n.getKey(), Emap2);
+            for (edge_data x1 : d.getE(n.getKey())) {
+                edge_data x2 = new EdgeData(x1);
+                Emap1.put(x2.getDest(), x1);
+                Emap2.put(x2.getSrc(), x1);
+            }
         }
     }
 
@@ -86,7 +93,7 @@ public class DS_DWGraph implements directed_weighted_graph {
     // Vmap.get(src).get(dest)
     @Override
     public edge_data getEdge(int src, int dest) {
-        if (getE(src).contains(getNode(dest))) {
+        if (this.SEmap.containsKey(src) && this.SEmap.get(src).containsKey(dest)) {
             return SEmap.get(src).get(dest);
         }
         return null;
@@ -106,8 +113,8 @@ public class DS_DWGraph implements directed_weighted_graph {
             Vmap.put(n.getKey(), n);
             HashMap<Integer, edge_data> Emap1 = new HashMap<Integer, edge_data>();
             HashMap<Integer, edge_data> Emap2 = new HashMap<Integer, edge_data>();
-            SEmap.put(n.getKey(),Emap1);
-            DEmap.put(n.getKey(),Emap2);
+            SEmap.put(n.getKey(), Emap1);
+            DEmap.put(n.getKey(), Emap2);
             MCcounter++;
         }
     }
@@ -128,7 +135,7 @@ public class DS_DWGraph implements directed_weighted_graph {
             edge_data e = new EdgeData(src, dest, w);
             SEmap.get(src).put(dest, e);
             DEmap.get(dest).put(src, e);
-                MCcounter++;
+            MCcounter++;
             if (getEdge(src, dest) != null) {
                 Ecounter++;
             }
@@ -144,11 +151,9 @@ public class DS_DWGraph implements directed_weighted_graph {
      */
     @Override
     public Collection<node_data> getV() {
-        if (Vmap != null) {
             return Vmap.values();
         }
-        return null;
-    }
+
 
     /**
      * This method returns a pointer (shallow copy) for the
@@ -184,7 +189,7 @@ public class DS_DWGraph implements directed_weighted_graph {
     //clue: Tal's complexity was O(1)
     @Override
     public node_data removeNode(int key) {
-        if (Vmap!=null&&Vmap.containsKey(key)) {
+        if (Vmap != null && Vmap.containsKey(key)) {
             SEmap.get(key).remove(key);
             DEmap.get(key).remove(key);
             MCcounter++;
@@ -249,6 +254,7 @@ public class DS_DWGraph implements directed_weighted_graph {
     public int getMC() {
         return MCcounter;
     }
+
     @Override
     public String toString() {
         String str = "";

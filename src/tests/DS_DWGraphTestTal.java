@@ -3,6 +3,8 @@ package tests;
 import api.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DS_DWGraphTestTal {
@@ -78,4 +80,54 @@ class DS_DWGraphTestTal {
         ag0.init(g0);
         assertTrue(ag0.isConnected());
     }
-}
+    @Test
+    void shortestPath(){
+        directed_weighted_graph g0 =new DS_DWGraph();
+        node_data a1= new NodeData(1);
+        node_data a2= new NodeData(2);
+        node_data a3= new NodeData(3);
+        node_data a4= new NodeData(4);
+        g0.addNode(a1);
+        g0.addNode(a2);
+        g0.addNode(a3);
+        g0.addNode(a4);
+        g0.connect(a1.getKey(),a2.getKey(),100);
+        g0.connect(a2.getKey(),a3.getKey(),10);
+        g0.connect(a4.getKey(),a3.getKey(),2);
+        g0.connect(a2.getKey(),a4.getKey(),5);
+        g0.connect(a4.getKey(),a2.getKey(),5);
+        g0.connect(a4.getKey(),a1.getKey(),9);
+        g0.connect(a1.getKey(),a4.getKey(),9);
+        dw_graph_algorithms ag0 = new DWGraph_Algo();
+        ag0.init(g0);
+        int[] key={1,4,3};
+        int j=0;
+               for(node_data i: ag0.shortestPath(1,3)){
+                   assertEquals(i.getKey(),key[j]);
+                   j++;
+               }
+    }
+    @Test
+    void shortestPathDist(){
+        directed_weighted_graph g0 =new DS_DWGraph();
+        node_data a1= new NodeData(1);
+        node_data a2= new NodeData(2);
+        node_data a3= new NodeData(3);
+        node_data a4= new NodeData(4);
+        g0.addNode(a1);
+        g0.addNode(a2);
+        g0.addNode(a3);
+        g0.addNode(a4);
+        g0.connect(a1.getKey(),a2.getKey(),100);
+        g0.connect(a2.getKey(),a3.getKey(),10);
+        g0.connect(a4.getKey(),a3.getKey(),2);
+        g0.connect(a4.getKey(),a3.getKey(),5);
+        g0.connect(a2.getKey(),a4.getKey(),5);
+        g0.connect(a4.getKey(),a1.getKey(),9);
+        g0.connect(a1.getKey(),a4.getKey(),9);
+        dw_graph_algorithms ag0 = new DWGraph_Algo();
+        ag0.init(g0);
+            assertEquals(ag0.shortestPathDist(1,4),9);
+
+        }
+    }
