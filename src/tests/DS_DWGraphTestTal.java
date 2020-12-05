@@ -62,4 +62,20 @@ class DS_DWGraphTestTal {
         }
         assertNotEquals(ag0.getGraph().nodeSize(), g1.nodeSize());
     }
+    @Test
+    void isConnected(){
+        directed_weighted_graph g0 =new DS_DWGraph();
+        node_data a1= new NodeData();
+        node_data a2= new NodeData();
+        node_data a3= new NodeData();
+        g0.addNode(a1);
+        g0.addNode(a2);
+        g0.addNode(a3);
+        g0.connect(a1.getKey(),a2.getKey(),3);
+        g0.connect(a2.getKey(),a3.getKey(),2);
+        g0.connect(a3.getKey(),a1.getKey(),4);
+        dw_graph_algorithms ag0 = new DWGraph_Algo();
+        ag0.init(g0);
+        assertTrue(ag0.isConnected());
+    }
 }

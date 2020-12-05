@@ -67,34 +67,31 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             if (gr.nodeSize() == 0 || gr.nodeSize() == 1) {
                 return true;
             }
-            int counter = 0;
+            int counter1 = 0;
             for (node_data n : gr.getV()) {
                 Queue<node_data> queue = new LinkedList<node_data>();
                 queue.add(n);
                 if (n.getTag() == 0) {
                     n.setTag(1);//1 means visited and 0 means not visited
-                    counter++;
+                    counter1++;
                 }
                 while (!queue.isEmpty()) {
                     for (edge_data e : gr.getE(n.getKey())) {
                         if (gr.getNode(e.getDest()).getTag() == 0) {
                             queue.add(gr.getNode(e.getSrc()));
                             gr.getNode(e.getDest()).setTag(1);
-                            counter++;
+                            counter1++;
                         }
                         queue.remove();
                     }
                 }
             }
-            if (counter != gr.nodeSize()) {
+            if (counter1 != gr.nodeSize()) {
                 return false;
             }
         }
-    }
         return true;
-}
-
-
+    }
 
     /**
      * returns the length of the shortest path between src to dest
