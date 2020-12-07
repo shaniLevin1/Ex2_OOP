@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class NodeData implements node_data{
     private int id;
-    private static int Kcounter;
+    private static int Kcounter=0;
     private int Tag;
     private String Info;
     private double weight;
@@ -21,6 +21,13 @@ public class NodeData implements node_data{
         this.Info=" ";
         this.g=null; //need to check
     }
+    public NodeData(int key) {
+        this.id=key;
+        this.Tag=0;
+        this.weight=0;
+        this.Info=" ";
+    }
+
 
     public NodeData(node_data a){
         this.id=a.getKey();
@@ -47,9 +54,7 @@ public class NodeData implements node_data{
         return Objects.hash(id, Tag, Info, weight);
     }
 
-    public NodeData(int key){
-        this.id=key;
-    }
+
 
     /**
      * Returns the key (id) associated with this node.
