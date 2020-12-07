@@ -1,5 +1,7 @@
 package api;
 
+import com.google.gson.Gson;
+
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -244,6 +246,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean save(String file) {
+        Gson gson=new Gson();
         return false;
     }
 
