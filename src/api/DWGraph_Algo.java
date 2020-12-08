@@ -1,7 +1,5 @@
 package api;
 
-import com.google.gson.Gson;
-
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -64,35 +62,43 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean isConnected() {
-        if (gr != null) {
-            if (gr.nodeSize() == 0 || gr.nodeSize() == 1) {
-                return true;
-            }
-            int counter1 = 0;
-            for (node_data n : gr.getV()) {
-                Queue<node_data> queue = new LinkedList<node_data>();
-                queue.add(n);
-                if (n.getTag() == 0) {
-                    n.setTag(1);//1 means visited and 0 means not visited
-                    counter1++;
+            boolean b =true;
+            if (gr != null) {
+                if (gr.nodeSize() == 0 || gr.nodeSize() == 1) {
+                    return true;
                 }
-                while (!queue.isEmpty()) {
-                    for (edge_data e : gr.getE(n.getKey())) {
-                        if (gr.getNode(e.getDest()).getTag() == 0) {
-                            queue.add(gr.getNode(e.getSrc()));
-                            gr.getNode(e.getDest()).setTag(1);
-                            counter1++;
+
+                for (node_data n : gr.getV()) {
+                    int counter1 = 0;
+                    for (node_data m : gr.getV()) {
+                        m.setTag(0);
+                    }
+                    Queue<node_data> queue = new LinkedList<node_data>();
+                    queue.add(n);
+                    if (n.getTag() == 0) {
+                        n.setTag(1);//1 means visited and 0 means not visited
+                        counter1++;
+                    }
+                    while (!queue.isEmpty()) {
+                        n=queue.poll();
+                        for (edge_data e : gr.getE(n.getKey())) {
+                            if (gr.getNode(e.getDest()).getTag() == 0) {
+                                queue.add(gr.getNode(e.getDest()));
+                                gr.getNode(e.getDest()).setTag(1);
+                                counter1++;
+                            }
                         }
-                        queue.remove();
+                    }
+                    if (counter1 != gr.nodeSize()) {
+                        System.out.println(counter1);
+                        b=false;
                     }
                 }
+
             }
-            if (counter1 != gr.nodeSize()) {
-                return false;
-            }
+            return b;
         }
-        return true;
-    }
+
 
     /**
      * returns the length of the shortest path between src to dest
@@ -246,7 +252,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean save(String file) {
-        Gson gson=new Gson();
+        //Gson gson=new Gson();
         return false;
     }
 
