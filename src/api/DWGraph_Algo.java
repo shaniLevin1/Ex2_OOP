@@ -1,5 +1,13 @@
 package api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -62,43 +70,42 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean isConnected() {
-            boolean b =true;
-            if (gr != null) {
-                if (gr.nodeSize() == 0 || gr.nodeSize() == 1) {
-                    return true;
-                }
+        boolean b =true;
+        if (gr != null) {
+            if (gr.nodeSize() == 0 || gr.nodeSize() == 1) {
+                return true;
+            }
 
-                for (node_data n : gr.getV()) {
-                    int counter1 = 0;
-                    for (node_data m : gr.getV()) {
-                        m.setTag(0);
-                    }
-                    Queue<node_data> queue = new LinkedList<node_data>();
-                    queue.add(n);
-                    if (n.getTag() == 0) {
-                        n.setTag(1);//1 means visited and 0 means not visited
-                        counter1++;
-                    }
-                    while (!queue.isEmpty()) {
-                        n=queue.poll();
-                        for (edge_data e : gr.getE(n.getKey())) {
-                            if (gr.getNode(e.getDest()).getTag() == 0) {
-                                queue.add(gr.getNode(e.getDest()));
-                                gr.getNode(e.getDest()).setTag(1);
-                                counter1++;
-                            }
+            for (node_data n : gr.getV()) {
+                int counter1 = 0;
+                for (node_data m : gr.getV()) {
+                    m.setTag(0);
+                }
+                Queue<node_data> queue = new LinkedList<node_data>();
+                queue.add(n);
+                if (n.getTag() == 0) {
+                    n.setTag(1);//1 means visited and 0 means not visited
+                    counter1++;
+                }
+                while (!queue.isEmpty()) {
+                    n=queue.poll();
+                    for (edge_data e : gr.getE(n.getKey())) {
+                        if (gr.getNode(e.getDest()).getTag() == 0) {
+                            queue.add(gr.getNode(e.getDest()));
+                            gr.getNode(e.getDest()).setTag(1);
+                            counter1++;
                         }
                     }
-                    if (counter1 != gr.nodeSize()) {
-                        System.out.println(counter1);
-                        b=false;
-                    }
                 }
-
+                if (counter1 != gr.nodeSize()) {
+                    System.out.println(counter1);
+                    b=false;
+                }
             }
-            return b;
-        }
 
+        }
+        return b;
+    }
 
     /**
      * returns the length of the shortest path between src to dest
@@ -252,8 +259,18 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean save(String file) {
-        //Gson gson=new Gson();
-        return false;
+        Gson gson=new GsonBuilder().setPrettyPrinting().create();
+        String json= gson.toJson(gr);
+        try{
+            PrintWriter pw=new PrintWriter("file");
+            pw.write(json);
+            pw.close();
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -267,8 +284,26 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean load(String file) {
+//        try{
+//            GsonBuilder builder=new GsonBuilder();
+//           // builder.registerTypeAdapter(DS_DWGraph.class, new DS_DWGraphJsonDeserializer() );
+//        }
+//        catch (){
+//
+//        }
         return false;
     }
+//    private JSONObject getJsonFromMap(Map<String, Object> map) throws JsonParseException {
+////        JSONObject jsonData = new JSONObject();
+////        for (String key : map.keySet()) {
+////            Object value = map.get(key);
+////            if (value instanceof Map<?, ?>) {
+////                value = getJsonFromMap((Map<String, Object>) value);
+////            }
+////            jsonData.put(key, value);
+////        }
+//  //      return jsonData;
+//    }
 
     @Override
     public String toString() {
