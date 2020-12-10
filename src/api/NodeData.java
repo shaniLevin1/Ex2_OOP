@@ -8,22 +8,33 @@ import java.util.Objects;
 
 public class NodeData implements node_data{
     private int id;
-    private static int Kcounter;
+    private static int Kcounter=0;
     private int Tag;
     private String Info;
     private double weight;
+    private geo_location g;
 
     public NodeData() {
         this.id=Kcounter++;
         this.Tag=0;
         this.weight=0;
         this.Info=" ";
+        this.g=null; //need to check
     }
+    public NodeData(int key) {
+        this.id=key;
+        this.Tag=0;
+        this.weight=0;
+        this.Info=" ";
+    }
+
+
     public NodeData(node_data a){
         this.id=a.getKey();
         this.Tag=a.getTag();
         this.weight=a.getWeight();
         this.Info=a.getInfo();
+        this.g=a.getLocation();
     }
 
     @Override
@@ -34,7 +45,8 @@ public class NodeData implements node_data{
         return id == nodeData.id &&
                 Tag == nodeData.Tag &&
                 Double.compare(nodeData.weight, weight) == 0 &&
-                Objects.equals(Info, nodeData.Info);
+                Objects.equals(Info, nodeData.Info) &&
+                Objects.equals(g, nodeData.g);
     }
 
     @Override
@@ -42,9 +54,7 @@ public class NodeData implements node_data{
         return Objects.hash(id, Tag, Info, weight);
     }
 
-    public NodeData(int key){
-        this.id=key;
-    }
+
 
     /**
      * Returns the key (id) associated with this node.
@@ -65,7 +75,7 @@ public class NodeData implements node_data{
      */
     @Override
     public geo_location getLocation() {
-        return null;
+        return g;
     }
 
     /**
