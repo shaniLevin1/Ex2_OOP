@@ -1,25 +1,35 @@
 package api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.*;
+import gameClient.util.Point3D;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
+
 
 public class DWGraph_Algo implements dw_graph_algorithms {
     private directed_weighted_graph gr;
-    public void DWGraph_Algo() {
+    /**
+     * Directed weighted graph with all its properties - copy constructor by a given graph
+     */
+    public DWGraph_Algo(directed_weighted_graph graph) {
+        this.gr =  (directed_weighted_graph)graph;
+    }
+
+    /**
+     * graph constructor
+     */
+    public DWGraph_Algo() {
         this.gr = new DS_DWGraph();
     }
+
+
+
 
     /**
      * Init the graph on which this set of algorithms operates on.
      *
-     * @param g
+     * @param g - the graph to be focused on
      */
     @Override
     public void init(directed_weighted_graph g) {
@@ -38,6 +48,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return this.gr;
     }
 
+    /**
+     * checks if who graphs are equals
+     * @param o the graph to be compared with the current graph
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -46,6 +61,10 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return Objects.equals(gr, that.gr);
     }
 
+    /**
+     * returns the hashcode associated with a graph object
+     * @return
+     */
     @Override
     public int hashCode() {
         return Objects.hash(gr);
@@ -54,7 +73,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * Compute a deep copy of this weighted graph.
      *
-     * @return
+     * @return copied graph
      */
     @Override
     public directed_weighted_graph copy() {
@@ -66,7 +85,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      * Returns true if and only if (iff) there is a valid path from each node to each
      * other node. NOTE: assume directional graph (all n*(n-1) ordered pairs).
      *
-     * @return
+     * @return true if the graph isConnected- else returns false
      */
     @Override
     public boolean isConnected() {
@@ -113,7 +132,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      *
      * @param src  - start node
      * @param dest - end (target) node
-     * @return
+     * @return the shortest distance between src and dest
      */
     @Override
     public double shortestPathDist(int src, int dest) {
@@ -167,6 +186,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return dist.get(dest);
     }
 
+    /**
+     * returns the amount of edges that dest is their destination
+     * @param dest to check how many sources it has
+     * @return the amount of edges that dest is their destination
+     */
     public int cSRCd(node_data dest){
         int count=0;
         for(node_data i : gr.getV()){
@@ -180,27 +204,26 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * returns the the shortest path between src to dest - as an ordered List of nodes:
      * src--> n1-->n2-->...dest
-     * see: https://en.wikipedia.org/wiki/Shortest_path_problem
      * Note if no such path --> returns null;
      *
      * @param src  - start node
      * @param dest - end (target) node
-     * @return
+     * @return list of the patten
      */
     @Override
     public List<node_data> shortestPath(int src, int dest) {
-        if (gr.nodeSize()==0 || gr == null || (gr.nodeSize() == 1 && src != dest) || gr.getNode(src) == null || gr.getNode(dest) == null)
+        if (gr.nodeSize() == 0 || gr == null || (gr.nodeSize() == 1 && src != dest) || gr.getNode(src) == null || gr.getNode(dest) == null||gr.getE(src).size()==0)
             return null;
         HashMap<Integer, List<node_data>> shortest = new HashMap<Integer, List<node_data>>();
         List<node_data> l = new LinkedList<>();
         l.add(gr.getNode(src));
         if (src == dest)
-            return l;
+            return new LinkedList<>();
         shortest.put(src, l);
         int countSrcDest = cSRCd(gr.getNode(dest));
         int count = 0;
-        Iterator<node_data> x=gr.getV().iterator();
-        while(x.hasNext()){
+        Iterator<node_data> x = gr.getV().iterator();
+        while (x.hasNext()) {
             x.next().setTag(0);
         }
         HashMap<Integer, Double> dist = new HashMap<>();//hashmap for the distances (int for key)
@@ -212,11 +235,13 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         });
         dist.put(src, 0.0);
         queue.add(gr.getNode(src));
+//        if(src==0)
+//            count++;
         while (!queue.isEmpty()) {
             node_data keep = queue.poll();
             for (edge_data i : gr.getE(keep.getKey())) {
                 if (gr.getNode(i.getDest()).getTag() != 2) {
-                    if (gr.getNode(i.getDest()).getKey() == dest)
+                    if (gr.getNode(i.getDest()).getKey() == dest || gr.getNode(i.getSrc()).getKey() == dest)
                         count++;
                     if (dist.containsKey(i.getDest())) {
                         if (dist.get(i.getDest()) > dist.get(i.getSrc()) + gr.getEdge(i.getSrc(), i.getDest()).getWeight()) {
@@ -235,18 +260,21 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                     if (queue.contains(gr.getNode(i.getDest()))) {
                         queue.remove(gr.getNode(i.getDest()));
                     }
-                   // queue.add(gr.getNode(i.getDest()));
+
                     shortest.put(gr.getNode(i.getDest()).getKey(), s);
                 }
-                gr.getNode(i.getDest()).setTag(1);
-                queue.add(gr.getNode(i.getDest()));
-            }
+                if(gr.getNode(i.getDest()).getTag()!=2) {
+                    gr.getNode(i.getDest()).setTag(1);
+                    queue.add(gr.getNode(i.getDest()));
+                }
 
             if (count == countSrcDest)
-                break;
-            gr.getNode(keep.getKey()).setTag(2);//i finished with that node completely
+                return shortest.get(dest);
         }
-
+            gr.getNode(keep.getKey()).setTag(2);//i finished with that node completely
+    }
+if(!shortest.containsKey(dest))
+    return null;
         return shortest.get(dest);
     }
 
@@ -259,22 +287,43 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean save(String file) {
-        Gson gson=new GsonBuilder().setPrettyPrinting().create();
-        String json= gson.toJson(gr);
-        try{
-            PrintWriter pw=new PrintWriter("file");
-            pw.write(json);
-            pw.close();
+
+        Gson json = new GsonBuilder().create();
+        JsonArray nodes = new JsonArray();
+        JsonArray edges = new JsonArray();
+        JsonObject graph = new JsonObject();
+        for (node_data n : this.gr.getV()) {
+            JsonObject o = new JsonObject();
+            double location = n.getLocation().x(), y = n.getLocation().y(), z = n.getLocation().z();
+            o.addProperty("pos", location + "," + y + "," + z);
+            o.addProperty("id", n.getKey());
+            nodes.add(o);
+
+            for (edge_data e : this.gr.getE(n.getKey())) {
+                JsonObject edge = new JsonObject();
+                edge.addProperty("src", e.getSrc());
+                edge.addProperty("w", e.getWeight());
+                edge.addProperty("dest", e.getDest());
+                edges.add(edge);
+            }
         }
-        catch (FileNotFoundException e){
+        graph.add("Nodes", nodes);
+        graph.add("Edges", edges);
+        File x = new File(file);
+        try {
+            FileWriter writer = new FileWriter(x);
+            writer.write(json.toJson(graph));
+            writer.close();
+            return true;
+
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        return true;
     }
 
     /**
-     * This method load a graph to this graph algorithm.
+     * This method loads a graph to this graph algorithm.
      * if the file was successfully loaded - the underlying graph
      * of this class will be changed (to the loaded one), in case the
      * graph was not loaded the original graph should remain "as is".
@@ -284,27 +333,67 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean load(String file) {
-//        try{
-//            GsonBuilder builder=new GsonBuilder();
-//           // builder.registerTypeAdapter(DS_DWGraph.class, new DS_DWGraphJsonDeserializer() );
-//        }
-//        catch (){
-//
-//        }
+
+        directed_weighted_graph graph1 = new DS_DWGraph(); //The graph to load onto.
+        JsonObject graph; //The Gson Object to read from.
+        File f = new File(file); //The file containing the data.
+        try {
+            FileReader reader = new FileReader(f);
+            graph = new JsonParser().parse(reader).getAsJsonObject();
+            JsonArray nodes = graph.getAsJsonArray("Nodes"); //Get The "Edges" member from the Json Value.
+            JsonArray edges = graph.getAsJsonArray("Edges"); //Get The "Edges" member from the Json Value.
+//            JsonArray nodes = graph.getAsJsonArray("Nodes"); //Get The "Edges" member from the Json Value.
+
+            for (JsonElement n : nodes) {
+
+                int id = ((JsonObject) n).get("id").getAsInt();
+                double x1 = 0;
+                double x2 = 0;
+                double x3 = 0;
+                String pos = ((JsonObject) n).get("pos").getAsString();
+                String x="";
+                int counter=0;
+                for (int i = 0; i < pos.length(); i++) {
+                    if(pos.charAt(i)==','){
+                        if(counter==0) x1=Double.parseDouble(x);
+                        if(counter==1) x2=Double.parseDouble(x);
+                        if(counter==2) x3=Double.parseDouble(x);
+                        counter++;
+                        x="";
+                    }
+                    else{
+                        x=x + pos.charAt(i);
+                    }
+                }
+                geo_location location = new Point3D(x1, x2, x3);
+                node_data n1 = new NodeData(id); //Insert into node_data n values from Json.
+                n1.setLocation(location); //Insert into node_data n location values from Json that created.
+                graph1.addNode(n1);
+            }
+
+            for (JsonElement e : edges) {
+                int src = ((JsonObject) e).get("src").getAsInt(); //Receive src
+                double weight = ((JsonObject) e).get("w").getAsDouble(); //Receive weight
+                int dest = ((JsonObject) e).get("dest").getAsInt(); //Receive dest
+
+                edge_data e1 = new EdgeData(src, dest, weight); //Build a new edge with given args
+                graph1.connect(e1.getSrc(), e1.getDest(), e1.getWeight()); //Connect between nodes on the new graph
+            }
+            this.gr = graph1;
+            // System.out.println("Graph loaded successfully");
+            return true;
+
+        } catch (FileNotFoundException e) {
+            // System.out.println("Failed to load graph");
+            e.printStackTrace();
+        }
+
         return false;
     }
-//    private JSONObject getJsonFromMap(Map<String, Object> map) throws JsonParseException {
-////        JSONObject jsonData = new JSONObject();
-////        for (String key : map.keySet()) {
-////            Object value = map.get(key);
-////            if (value instanceof Map<?, ?>) {
-////                value = getJsonFromMap((Map<String, Object>) value);
-////            }
-////            jsonData.put(key, value);
-////        }
-//  //      return jsonData;
-//    }
-
+    /**
+     * returns a string performance of the required information
+     * @return a string performance of the required information
+     */
     @Override
     public String toString() {
         return gr.toString();

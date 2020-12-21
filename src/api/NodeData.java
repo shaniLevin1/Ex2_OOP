@@ -1,10 +1,9 @@
 package api;
 
-import org.w3c.dom.Node;
-
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Objects;
+/**
+ * this class represents a node in the graph with all it properties: id, Tag, Info, weight and location on the graph
+ */
 
 public class NodeData implements node_data{
     private int id;
@@ -14,6 +13,10 @@ public class NodeData implements node_data{
     private double weight;
     private geo_location g;
 
+    /**
+     * empty constructor
+     */
+
     public NodeData() {
         this.id=Kcounter++;
         this.Tag=0;
@@ -21,6 +24,11 @@ public class NodeData implements node_data{
         this.Info=" ";
         this.g=null; //need to check
     }
+
+    /**
+     * copy constructor by id\key
+     * @param key
+     */
     public NodeData(int key) {
         this.id=key;
         this.Tag=0;
@@ -28,7 +36,10 @@ public class NodeData implements node_data{
         this.Info=" ";
     }
 
-
+    /**
+     * deep copy constructor by a given node
+     * @param a the object to be copied
+     */
     public NodeData(node_data a){
         this.id=a.getKey();
         this.Tag=a.getTag();
@@ -37,6 +48,11 @@ public class NodeData implements node_data{
         this.g=a.getLocation();
     }
 
+    /**
+     * checks if two elements are cloned
+     * @param o the object to compare with
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,6 +65,10 @@ public class NodeData implements node_data{
                 Objects.equals(g, nodeData.g);
     }
 
+    /**
+     *
+     * @return the hashcode of a given object
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, Tag, Info, weight);
@@ -69,7 +89,7 @@ public class NodeData implements node_data{
 
     /**
      * Returns the location of this node, if
-     * none return null.
+     * none returns null.
      *
      * @return
      */
@@ -85,7 +105,7 @@ public class NodeData implements node_data{
      */
     @Override
     public void setLocation(geo_location p) {
-
+        g=p;
     }
 
     /**
@@ -121,7 +141,7 @@ public class NodeData implements node_data{
     /**
      * Allows changing the remark (meta data) associated with this node.
      *
-     * @param s
+     * @param s the object to set it's info
      */
     @Override
     public void setInfo(String s) {
@@ -129,10 +149,8 @@ public class NodeData implements node_data{
     }
 
     /**
-     * Temporal data (aka color: e,g, white, gray, black)
-     * which can be used be algorithms
-     *
-     * @return
+     *returns the tag of the current node
+     * @return tag
      */
     @Override
     public int getTag() {
@@ -150,6 +168,10 @@ public class NodeData implements node_data{
         this.Tag=t;
     }
 
+    /**
+     * prints the id of the current node
+     * @return
+     */
     @Override
     public String toString() {
         return "" + id;

@@ -1,8 +1,5 @@
 package api;
 
-import api.edge_data;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class EdgeData implements edge_data {
@@ -12,11 +9,21 @@ public class EdgeData implements edge_data {
     private String Info;
     private int Tag;
 
+    /**
+     * copy constructor for edge data
+     * @param e the edge to copy
+     */
     public EdgeData(edge_data e){
         this.src=e.getSrc();
         this.dest=e.getDest();
         this.weight=e.getWeight();
     }
+
+    /**
+     * checks if two objects are equals
+     * @param o the object to compare with
+     * @return true if equals, else returns false
+     */
 
     @Override
     public boolean equals(Object o) {
@@ -30,11 +37,21 @@ public class EdgeData implements edge_data {
                 Objects.equals(Info, edgeData.Info);
     }
 
+    /**
+     * returns the hashcode of a specific edge data object
+     * @return the hashcode of a specific edge data object
+     */
     @Override
     public int hashCode() {
         return Objects.hash(src, dest, weight, Info, Tag);
     }
 
+    /**
+     * constructor for edge data by src, dest and weight
+     * @param src edge source
+     * @param dest edge destination
+     * @param w edge weight
+     */
     public EdgeData(int src, int dest, double w){
         if(w>0){
             this.src=src;
@@ -44,9 +61,8 @@ public class EdgeData implements edge_data {
     }
 
     /**
-     * The id of the source node of this edge.
-     *
-     * @return
+     * returns the id of the source node of the current edge
+     * @return the id of the source node of the current edge
      */
     @Override
     public int getSrc() {
@@ -54,9 +70,8 @@ public class EdgeData implements edge_data {
     }
 
     /**
-     * The id of the destination node of this edge
-     *
-     * @return
+     * returns the id of the destination node of this edge
+     * @return the id of the destination node of this edge
      */
     @Override
     public int getDest() {
@@ -74,7 +89,7 @@ public class EdgeData implements edge_data {
     /**
      * Returns the remark (meta data) associated with this edge.
      *
-     * @return
+     * @return the remark (meta data) associated with this edge.
      */
     @Override
     public String getInfo() {
@@ -84,7 +99,7 @@ public class EdgeData implements edge_data {
     /**
      * Allows changing the remark (meta data) associated with this edge.
      *
-     * @param s
+     * @param s the information to set
      */
     @Override
     public void setInfo(String s) {
@@ -94,10 +109,8 @@ public class EdgeData implements edge_data {
     }
 
     /**
-     * Temporal data (aka color: e,g, white, gray, black)
-     * which can be used be algorithms
-     *
-     * @return
+     * Temporal data which can be used be algorithms
+     * @return tag situation of the edge
      */
     @Override
     public int getTag() {
