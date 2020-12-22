@@ -23,12 +23,6 @@ public class SimpleGameClient {
         game_service game = Game_Server_Ex2.getServer(2); // you have [0,23] games
         String g = game.getGraph();
         directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
-        //game.login(12345);  // please use your ID only as a key. uncomment this will upload your results to the server
-        node_data nn = gg.getNode(10);
-        String info = game.toString();
-        System.out.println(info);
-        System.out.println(g);
-        System.out.println(game.getPokemons());
         int src_node = 0;  // arbitrary node, you should start at one of the fruits
         game.addAgent(src_node);
         game.startGame();

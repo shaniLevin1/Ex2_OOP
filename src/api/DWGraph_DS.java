@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 
-public class DS_DWGraph implements directed_weighted_graph {
+public class DWGraph_DS implements directed_weighted_graph {
     private HashMap<Integer, node_data> Vmap;
     private HashMap<Integer, HashMap<Integer, edge_data>> SEmap;
     private HashMap<Integer, HashMap<Integer, edge_data>> DEmap;
@@ -14,6 +14,7 @@ public class DS_DWGraph implements directed_weighted_graph {
 
     /**
      * checks if two graphs are equal
+     *
      * @param o the graph to compare with
      * @return true if equals , else returns false
      */
@@ -21,7 +22,7 @@ public class DS_DWGraph implements directed_weighted_graph {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DS_DWGraph that = (DS_DWGraph) o;
+        DWGraph_DS that = (DWGraph_DS) o;
         return Ecounter == that.Ecounter &&
                 Objects.equals(Vmap, that.Vmap) &&
                 Objects.equals(SEmap, that.SEmap) &&
@@ -30,6 +31,7 @@ public class DS_DWGraph implements directed_weighted_graph {
 
     /**
      * returns the hashcode of a required object
+     *
      * @return the hashcode of a required object
      */
     @Override
@@ -40,7 +42,7 @@ public class DS_DWGraph implements directed_weighted_graph {
     /**
      * empty constructor for graph
      */
-    public DS_DWGraph() {
+    public DWGraph_DS() {
         Vmap = new HashMap<Integer, node_data>();
         SEmap = new HashMap<Integer, HashMap<Integer, edge_data>>();
         DEmap = new HashMap<Integer, HashMap<Integer, edge_data>>();
@@ -50,10 +52,11 @@ public class DS_DWGraph implements directed_weighted_graph {
 
     /**
      * deep copy constructor for graph
+     *
      * @param d the graph to be copied
      */
 
-    public DS_DWGraph(directed_weighted_graph d) {
+    public DWGraph_DS(directed_weighted_graph d) {
         this.Ecounter = d.edgeSize();
         Vmap = new HashMap<Integer, node_data>();
         SEmap = new HashMap<Integer, HashMap<Integer, edge_data>>();
@@ -87,7 +90,7 @@ public class DS_DWGraph implements directed_weighted_graph {
     /**
      * returns the data of the edge (src,dest), null if none.
      *
-     * @param src edge source
+     * @param src  edge source
      * @param dest edge destination
      * @return the required edge
      */
@@ -131,12 +134,14 @@ public class DS_DWGraph implements directed_weighted_graph {
     @Override
     public void connect(int src, int dest, double w) {
         if (Vmap.containsKey(src) && Vmap.containsKey(dest)) {
-            edge_data e = new EdgeData(src, dest, w);
-            SEmap.get(src).put(dest, e);
-            DEmap.get(dest).put(src, e);
-            MCcounter++;
-            if (getEdge(src, dest) != null) { // need to check on tester.
-                Ecounter++;
+            if(w>=0) {
+                edge_data e = new EdgeData(src, dest, w);
+                SEmap.get(src).put(dest, e);
+                DEmap.get(dest).put(src, e);
+                MCcounter++;
+                if (getEdge(src, dest) != null) { // need to check on tester.
+                    Ecounter++;
+                }
             }
         }
     }
@@ -183,10 +188,10 @@ public class DS_DWGraph implements directed_weighted_graph {
     @Override
     public node_data removeNode(int key) {
         if (Vmap != null && Vmap.containsKey(key)) {
-            for(HashMap<Integer,edge_data> e:SEmap.values()){
-                   e.remove(key);
+            for (HashMap<Integer, edge_data> e : SEmap.values()) {
+                e.remove(key);
             }
-            for(HashMap<Integer,edge_data> e:DEmap.values()){
+            for (HashMap<Integer, edge_data> e : DEmap.values()) {
                 e.remove(key);
             }
             SEmap.remove(key);
@@ -200,7 +205,7 @@ public class DS_DWGraph implements directed_weighted_graph {
     /**
      * Deletes required edge from the graph,
      *
-     * @param src edge srd
+     * @param src  edge srd
      * @param dest edge dest
      * @return the data of the removed edge (null if none).
      */
@@ -239,6 +244,7 @@ public class DS_DWGraph implements directed_weighted_graph {
 
     /**
      * returns collection of the out-going edges associated with a required node data
+     *
      * @param node_id the required node to return its collection
      * @return collection of the out-going edges associated with a required node data
      */
@@ -254,28 +260,6 @@ public class DS_DWGraph implements directed_weighted_graph {
     @Override
     public int getMC() {
         return MCcounter;
-    }
-
-    /**
-     * returns string performance for the current graph
-     * @return string performance for the current graph
-     */
-    @Override
-    public String toString() {
-        String str = "";
-        for (Integer x : Vmap.keySet()) {
-            str += "" + x + " --> out [";
-            for (edge_data i : getE(x)) {
-                str += i.getDest() + " (" + SEmap.get(x).get(i.getDest()).getWeight() + ") , ";//EdgeMap.get(x).keySet().toString() + " \n ";
-            }
-            str += "] \n";
-            str += "" + x + " --> in [";
-            for (edge_data i : getInE(x)) {
-                str += i.getSrc() + " (" + DEmap.get(x).get(i.getSrc()).getWeight() + ") , ";//EdgeMap.get(x).keySet().toString() + " \n ";
-            }
-            str += "] \n";
-        }
-        return str + " ";
     }
 }
 

@@ -20,7 +20,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      * graph constructor
      */
     public DWGraph_Algo() {
-        this.gr = new DS_DWGraph();
+        this.gr = new DWGraph_DS();
     }
 
 
@@ -77,7 +77,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public directed_weighted_graph copy() {
-        directed_weighted_graph g = new DS_DWGraph(gr);
+        directed_weighted_graph g = new DWGraph_DS(gr);
         return g;
     }
 
@@ -255,7 +255,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                     while (it.hasNext()) {
                         s.add(it.next());
                     }
-                    //deep copy for the list
                     s.add(gr.getNode(i.getDest()));
                     if (queue.contains(gr.getNode(i.getDest()))) {
                         queue.remove(gr.getNode(i.getDest()));
@@ -279,11 +278,11 @@ if(!shortest.containsKey(dest))
     }
 
     /**
-     * Saves this weighted (directed) graph to the given
-     * file name - in JSON format
+     * Save this weighted directed graph to the given
+     * file name which given by json string.
      *
-     * @param file - the file name (may include a relative path).
-     * @return true - iff the file was successfully saved
+     * @param file - the file name.
+     * @return boolean- true - if the file was successfully saved, else false.
      */
     @Override
     public boolean save(String file) {
@@ -323,26 +322,22 @@ if(!shortest.containsKey(dest))
     }
 
     /**
-     * This method loads a graph to this graph algorithm.
-     * if the file was successfully loaded - the underlying graph
-     * of this class will be changed (to the loaded one), in case the
-     * graph was not loaded the original graph should remain "as is".
+     * Load a graph by receiving a json string to the graph of this class.
      *
      * @param file - file name of JSON file
-     * @return true - iff the graph was successfully loaded.
+     * @return boolean-true - if the graph was successfully loaded, else false
      */
     @Override
     public boolean load(String file) {
 
-        directed_weighted_graph graph1 = new DS_DWGraph(); //The graph to load onto.
-        JsonObject graph; //The Gson Object to read from.
-        File f = new File(file); //The file containing the data.
+        directed_weighted_graph graph1 = new DWGraph_DS();
+        JsonObject graph;
+        File f = new File(file);
         try {
             FileReader reader = new FileReader(f);
             graph = new JsonParser().parse(reader).getAsJsonObject();
-            JsonArray nodes = graph.getAsJsonArray("Nodes"); //Get The "Edges" member from the Json Value.
-            JsonArray edges = graph.getAsJsonArray("Edges"); //Get The "Edges" member from the Json Value.
-//            JsonArray nodes = graph.getAsJsonArray("Nodes"); //Get The "Edges" member from the Json Value.
+            JsonArray nodes = graph.getAsJsonArray("Nodes");
+            JsonArray edges = graph.getAsJsonArray("Edges");
 
             for (JsonElement n : nodes) {
 
@@ -366,36 +361,26 @@ if(!shortest.containsKey(dest))
                     }
                 }
                 geo_location location = new Point3D(x1, x2, x3);
-                node_data n1 = new NodeData(id); //Insert into node_data n values from Json.
-                n1.setLocation(location); //Insert into node_data n location values from Json that created.
+                node_data n1 = new NodeData(id);
+                n1.setLocation(location);
                 graph1.addNode(n1);
             }
 
             for (JsonElement e : edges) {
-                int src = ((JsonObject) e).get("src").getAsInt(); //Receive src
-                double weight = ((JsonObject) e).get("w").getAsDouble(); //Receive weight
-                int dest = ((JsonObject) e).get("dest").getAsInt(); //Receive dest
+                int src = ((JsonObject) e).get("src").getAsInt();
+                double weight = ((JsonObject) e).get("w").getAsDouble();
+                int dest = ((JsonObject) e).get("dest").getAsInt();
 
-                edge_data e1 = new EdgeData(src, dest, weight); //Build a new edge with given args
-                graph1.connect(e1.getSrc(), e1.getDest(), e1.getWeight()); //Connect between nodes on the new graph
+                edge_data e1 = new EdgeData(src, dest, weight);
+                graph1.connect(e1.getSrc(), e1.getDest(), e1.getWeight());
             }
             this.gr = graph1;
-            // System.out.println("Graph loaded successfully");
             return true;
 
         } catch (FileNotFoundException e) {
-            // System.out.println("Failed to load graph");
             e.printStackTrace();
         }
 
         return false;
-    }
-    /**
-     * returns a string performance of the required information
-     * @return a string performance of the required information
-     */
-    @Override
-    public String toString() {
-        return gr.toString();
     }
 }

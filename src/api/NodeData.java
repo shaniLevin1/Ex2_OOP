@@ -168,12 +168,4 @@ public class NodeData implements node_data{
         this.Tag=t;
     }
 
-    /**
-     * prints the id of the current node
-     * @return
-     */
-    @Override
-    public String toString() {
-        return "" + id;
-    }
 }

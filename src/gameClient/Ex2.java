@@ -49,7 +49,10 @@ public class Ex2 implements Runnable {
                 client.join();
             client = new Thread(new Ex2(args0, args1));
             game1 = Game_Server_Ex2.getServer(level1);
-            game1.login(id1);
+            if(game1.login(id1))
+                System.out.println("Game login succeeded for level "+level1+" and for id "+id1);
+            else
+                System.out.println("Game login failed for level "+level1+" and for id "+id1);
             init();
             client.start();
         } catch (InterruptedException e) {
@@ -186,12 +189,16 @@ public class Ex2 implements Runnable {
         return best;
     }
 
-
+    /**
+     *  Load a graph by receiving a json string to the graph of this class.
+     * @param json
+     * @return the graph which loaded from the json string.
+     */
     private static directed_weighted_graph load(String json) {
-        directed_weighted_graph graph1 = new DS_DWGraph(); //The graph to load onto.
+        directed_weighted_graph graph1 = new DWGraph_DS();
         JsonObject graph = new JsonParser().parse(json).getAsJsonObject();
-        JsonArray nodes = graph.getAsJsonArray("Nodes"); //Get The "Edges" member from the Json Value.
-        JsonArray edges = graph.getAsJsonArray("Edges"); //Get The "Edges" member from the Json Value.
+        JsonArray nodes = graph.getAsJsonArray("Nodes");
+        JsonArray edges = graph.getAsJsonArray("Edges");
 
         for (JsonElement n : nodes) {
 
@@ -220,12 +227,12 @@ public class Ex2 implements Runnable {
         }
 
         for (JsonElement e : edges) {
-            int src = ((JsonObject) e).get("src").getAsInt(); //Receive src
-            double weight = ((JsonObject) e).get("w").getAsDouble(); //Receive weight
-            int dest = ((JsonObject) e).get("dest").getAsInt(); //Receive dest
+            int src = ((JsonObject) e).get("src").getAsInt();
+            double weight = ((JsonObject) e).get("w").getAsDouble();
+            int dest = ((JsonObject) e).get("dest").getAsInt();
 
-            edge_data e1 = new EdgeData(src, dest, weight); //Build a new edge with given args
-            graph1.connect(e1.getSrc(), e1.getDest(), e1.getWeight()); //Connect between nodes on the new graph
+            edge_data e1 = new EdgeData(src, dest, weight);
+            graph1.connect(e1.getSrc(), e1.getDest(), e1.getWeight());
         }
         return graph1;
     }
@@ -241,7 +248,6 @@ public class Ex2 implements Runnable {
         String l = game.move();
         _win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + game.toString());
         _ar.setTime(game1.timeToEnd());
-        System.out.println((l));
         String f = game.getPokemons();
         _agents = (ArrayList<CL_Agent>) _ar.getAgents(l, graph);
         _ar.setAgents(_agents);
@@ -296,12 +302,7 @@ public class Ex2 implements Runnable {
      * @return list of the nodes to the target
      */
     private List<node_data> chooseNewTarget(CL_Agent a) { //return the list from the agent to the
-//        _pokemons=Arena.json2Pokemons(game1.getPokemons());
-//        for(CL_Pokemon i: _pokemons){ Arena.updateEdge(i,graph);}
-//        CL_Pokemon best = mostValue(_pokemons); //
-        CL_Pokemon best = null; //
-//        if(a.get_curr_target()!=null&& a.getSrcNode()!=a.get_curr_target().get_edge().getSrc())
-//            return  Dijkstra.get(a.getSrcNode()).get(a.get_curr_target().get_edge().getDest());
+        CL_Pokemon best=null;
         double bestPath = 0;
         double max = Double.MIN_VALUE;
         double ratio;
@@ -313,7 +314,6 @@ public class Ex2 implements Runnable {
                 if (list != null) { //it means there is no path
                     x = dist(list);
                     y = temp.get_edge().getWeight();
-//                    if (x + y != 0)
                     bestPath = x + y; //add conditions if there is no path or if the src and the dest are equals
                     ratio = temp.getValue() / bestPath;
                     if (ratio > max) {
@@ -326,9 +326,6 @@ public class Ex2 implements Runnable {
 
         best.setHasAgent(true);
         a.set_curr_target(best);
-        System.out.println("ag id:" + a.getID() + "   src:" + a.getSrcNode() + "  dest" + best.get_edge().getDest());
-//        if (Dijkstra.get(a.getSrcNode()).get(best.get_edge().getSrc()).size() == 0)
-//            return Dijkstra.get(a.getSrcNode()).get(best.get_edge().getDest());
         return list;
     }
 
@@ -369,9 +366,6 @@ public class Ex2 implements Runnable {
                 f_highest = list.get(i);
             }
         }
-//        if (f_highest == null)
-//            f_highest = choosePokemon();// if not found--> bring me better pokemon than null by shortestPath
-//        _pokemons.remove(f_highest);
         return f_highest;
     }
 
